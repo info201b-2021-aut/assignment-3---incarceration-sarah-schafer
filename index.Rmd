@@ -1,0 +1,26 @@
+---
+title: "Incarceration Rates by Race"
+author: "Sarah Schafer"
+date: "11/19/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(tidyverse)
+library(ggplot2)
+library(patchwork)
+source("analysis.R")
+```
+
+## Comparison over time charts
+``` {r echo = FALSE}
+jail_percent_time_plot + total_percent_time_plot + total_jail_time_plot + total_time_plot
+```
+
+## Variable Comparison Charts
+``` {r echo = FALSE}
+total_jail_to_black_pop
+total_jail_to_white_pop
+```
