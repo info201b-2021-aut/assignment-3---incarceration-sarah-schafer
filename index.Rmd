@@ -10,17 +10,16 @@ knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
 library(tidyverse)
 library(ggplot2)
-library(patchwork)
+library(ggpubr)
 source("analysis.R")
 ```
 
 ## Comparison over time charts
 ``` {r echo = FALSE}
-jail_percent_time_plot + total_percent_time_plot + total_jail_time_plot + total_time_plot
+ggarrange(jail_percent_time_plot, total_percent_time_plot, total_jail_time_plot, total_time_plot, ncol = 2, nrow = 2)
 ```
 
 ## Variable Comparison Charts
 ``` {r echo = FALSE}
-total_jail_to_black_pop
-total_jail_to_white_pop
+ggarrange(total_jail_to_black_pop, total_jail_to_white_pop, ncol = 2, nrow = 1, common.legend = TRUE, legend = "bottom")
 ```

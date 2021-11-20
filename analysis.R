@@ -1,6 +1,28 @@
 library(tidyverse)
 library(ggplot2)
+library(ggpubr)
 data <- read.csv('https://raw.githubusercontent.com/vera-institute/incarceration-trends/master/incarceration_trends.csv')
+
+# Summary Statistics
+# Create a data frame with only the data from 2018
+df_2018 <- filter(data, year == 2018)
+# How many people in 2018 were in jail?
+total_jail_2018 <- sum(df_2018$total_jail_pop, na.rm = TRUE)
+# What is the proportion of the total population that is black?
+black_prop_total <- 100 * sum(df_2018$black_pop_15to64, na.rm = TRUE) / sum(df_2018$total_pop_15to64, na.rm = TRUE)
+# What is the proportion of the jailed population that is black?
+black_prop_jail <- 100 * sum(df_2018$black_jail_pop, na.rm = TRUE) / total_jail_2018
+# How many times greater is the proportion of the black jailed population to the
+# proportion of the black general population?
+black_prop_comp <- black_prop_jail/black_prop_total
+# What is the proportion of the total population that is white?
+white_prop_total <- 100 * sum(df_2018$white_pop_15to64, na.rm = TRUE) / sum(df_2018$total_pop_15to64, na.rm = TRUE)
+# What is the proportion of the jailed population that is white?
+white_prop_jail <- 100 * sum(df_2018$white_jail_pop, na.rm = TRUE) / total_jail_2018
+# How many times greater is the proportion of the black jailed population to the
+# proportion of the black general population?
+white_prop_comp <- white_prop_jail/white_prop_total
+
 
 # Trends over Time Charts
 # Create a dataframe that only contains information about different races
@@ -49,57 +71,44 @@ jail_percent_over_time <- gather(jail_percent_over_time, key = "Race", value = "
 total_jail_over_time <- gather(total_jail_over_time, key = "Race", value = "Total", -year)
 total_over_time <- gather(total_over_time, key = "Race", value = "Total", -year)
 # Create line graphs that show the ways that percentages of races have changed over time
-total_percent_time_plot <- ggplot(data = total_percent_over_time) + geom_line(aes(x = year, y = Percentage, col = Race))
-jail_percent_time_plot <- ggplot(data = jail_percent_over_time) + geom_line(aes(x = year, y = Percentage, col = Race))
-total_jail_time_plot <- ggplot(data = total_jail_over_time) + geom_line(aes(x=year, y= Total, col = Race))
-total_time_plot <- ggplot(data = total_over_time) + geom_line(aes(x = year, y = Total, col = Race))
+total_percent_time_plot <- ggplot(data = total_percent_over_time) + 
+  geom_line(aes(x = year, y = Percentage, col = Race)) +
+  theme(aspect.ratio = 1)
+jail_percent_time_plot <- ggplot(data = jail_percent_over_time) + 
+  geom_line(aes(x = year, y = Percentage, col = Race)) +
+  theme(aspect.ratio = 1)
+total_jail_time_plot <- ggplot(data = total_jail_over_time) + 
+  geom_line(aes(x=year, y= Total, col = Race)) + 
+  theme(aspect.ratio = 1)
+total_time_plot <- ggplot(data = total_over_time) + 
+  geom_line(aes(x = year, y = Total, col = Race)) + 
+  theme(aspect.ratio = 1)
 
 
 
 
 # Variable Comparison Chart 
 
-# Create a data frame with only the data from 2018
-df_2018 <- filter(data, year == 2018)
 # Create a data frame that contains information about the total jail population,
-# the urbanicity of the county, the black total popualtion, and the white total
+# the urbanicity of the county, the black total population, and the white total
 # population.
-var_comp_df <- select(df_2018, black_pop_15to64, white_pop_15to64, urbanicity, total_jail_pop)
-total_jail_to_black_pop <- ggplot(data = var_comp_df) + geom_point(aes(x = total_jail_pop, y = black_pop_15to64, col = urbanicity))
-total_jail_to_white_pop <- ggplot(data = var_comp_df) + geom_point(aes(x = total_jail_pop, y = white_pop_15to64, col = urbanicity))
+var_comp_df <- df_2018 %>%
+  select(black_pop_15to64, white_pop_15to64, urbanicity, total_jail_pop) %>%
+  filter(urbanicity != "")
+var_comp_df[is.na(var_comp_df)] <- 0
+total_jail_to_black_pop <- ggplot(data = var_comp_df, aes(x = black_pop_15to64, y = total_jail_pop)) + 
+  geom_point(aes(col = urbanicity)) + 
+  geom_smooth(method = lm) + 
+  theme(aspect.ratio = 1) +
+  xlim(0, 2000000)
+total_jail_to_white_pop <- ggplot(data = var_comp_df, aes(x = white_pop_15to64, y = total_jail_pop)) + 
+  geom_point(aes(col = urbanicity)) + 
+  geom_smooth(method = lm) + 
+  theme(aspect.ratio = 1) + 
+  xlim(0, 2000000)
 
 
 
 
 
-# Old work:
-# ggplot(data = race_over_time) + 
-  # geom_line(aes(x=year, y=percent_jail_aapi)) +
-  # geom_line(aes(x=year, y=percent_jail_black)) +
-  # geom_line(aes(x=year, y=percent_jail_latinx)) +
-  # geom_line(aes(x=year, y=percent_jail_native)) +
-  # geom_line(aes(x=year, y=percent_jail_white))
 
-# washington <- filter(data, state == "WA")
-# king_county <- filter(washington, county_name == "King County")
-# ggplot(data = king_county) + 
-  # geom_point(aes(x = year, y = total_jail_pop))
-
-# What is the proportion of the total population that is black?
-# black_prop_total <- sum(data$black_pop_15to64, na.rm = TRUE) / sum(data$total_pop_15to64, na.rm = TRUE)
-# What is the proportion of the jailed population that is black?
-# black_prop_jail <- sum(data$black_jail_pop, na.rm = TRUE) / sum(data$total_jail_pop, na.rm = TRUE)
-# How many times greater is the proportion of the black jailed population to the
-# proportion of the black general population?
-# black_prop_comp <- black_prop_jail/black_prop_total
-
-# trial1 <- mutate(data, black_prop_total_row = black_pop_15to64 / total_pop_15to64)
-# ggplot(trial1) + geom_col(aes(x=urbanicity, y = black_prop_total_row))
-# sum_trial1 <- trial1 %>%
-  # mutate(black_prison_prop = black_prison_pop / total_prison_pop) %>%
-  # group_by(urbanicity) %>%
-  # summarize(avg_black_pris_prop = mean(black_prison_prop, na.rm = TRUE))
-# ggplot(sum_trial1) + geom_point(aes(x=urbanicity, y=avg_black_pris_prop))
-
-
-# ggplot(trial1) + geom_col(aes(x=urbanicity, y = total_prison_pop))
