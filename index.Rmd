@@ -11,6 +11,7 @@ library(knitr)
 library(tidyverse)
 library(ggplot2)
 library(ggpubr)
+library(mapproj)
 source("analysis.R")
 ```
 
@@ -22,4 +23,11 @@ ggarrange(jail_percent_time_plot, total_percent_time_plot, total_jail_time_plot,
 ## Variable Comparison Charts
 ``` {r echo = FALSE}
 ggarrange(total_jail_to_black_pop, total_jail_to_white_pop, ncol = 2, nrow = 1, common.legend = TRUE, legend = "bottom")
+```
+
+
+## Maps
+``` {r echo = FALSE}
+black_pop_map
+jail_pop_map
 ```

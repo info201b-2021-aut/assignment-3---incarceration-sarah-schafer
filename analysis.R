@@ -1,6 +1,7 @@
 library(tidyverse)
 library(ggplot2)
 library(ggpubr)
+library(maps)
 data <- read.csv('https://raw.githubusercontent.com/vera-institute/incarceration-trends/master/incarceration_trends.csv')
 
 # Summary Statistics
@@ -97,16 +98,73 @@ var_comp_df <- df_2018 %>%
   filter(urbanicity != "")
 var_comp_df[is.na(var_comp_df)] <- 0
 total_jail_to_black_pop <- ggplot(data = var_comp_df, aes(x = black_pop_15to64, y = total_jail_pop)) + 
-  geom_point(aes(col = urbanicity)) + 
+  geom_point(aes(col = urbanicity, alpha = 0.3)) + 
   geom_smooth(method = lm) + 
   theme(aspect.ratio = 1) +
   xlim(0, 2000000)
 total_jail_to_white_pop <- ggplot(data = var_comp_df, aes(x = white_pop_15to64, y = total_jail_pop)) + 
-  geom_point(aes(col = urbanicity)) + 
+  geom_point(aes(col = urbanicity, alpha = 0.3)) + 
   geom_smooth(method = lm) + 
   theme(aspect.ratio = 1) + 
   xlim(0, 2000000)
 
+
+# Map Section
+
+# Load maps data frame
+map_df <- map_data("county")
+# Add polyname column so that it can be joined with a data frame of county fips codes
+map_df <- map_df %>%
+  unite(polyname, region, subregion, sep = ",", remove = FALSE)
+# Load county fips codes into a dataframe
+county_fips <- county.fips
+# Merge county_fips and map_df so lat/long and fips are in the same data frame
+fips_lat_long <- left_join(map_df, county_fips, by = "polyname")
+# Merge fips_lat_long and incarceration data from 2018 (df_2018)
+map_incarceration_2018 <- left_join(df_2018, fips_lat_long, by = "fips")
+
+# Make a blank theme (using the code for a blank theme from the textbook)
+blank_theme <- theme_bw() + 
+  theme(
+    axis.line = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title = element_blank(),
+    plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank()
+  )
+
+# Make map showing the distribution of the total black population
+black_pop_map <- ggplot() + 
+  geom_polygon(
+    data = map_incarceration_2018, 
+    mapping = aes(x = long, y = lat, group = group, fill = black_pop_15to64),
+    color = "black",
+    size = .1
+  ) + 
+  coord_map()+
+  scale_fill_continuous(low = "white", high = "blue", trans = "log") +
+  labs(fill = "Black Population 15-64") + 
+  blank_theme +
+  theme(legend.position = "bottom")
+
+# Make map showing the distribution of the total jail population
+jail_pop_map <- ggplot() + 
+  geom_polygon(
+    data = map_incarceration_2018, 
+    mapping = aes(x = long, y = lat, group = group, fill = total_jail_pop),
+    color = "black",
+    size = .1
+  ) + 
+  coord_map()+
+  scale_fill_continuous(low = "white", high = "blue", trans = "log") +
+  labs(fill = "Total Jail Population") + 
+  blank_theme +
+  theme(legend.position = "bottom")
+  
+  
 
 
 
