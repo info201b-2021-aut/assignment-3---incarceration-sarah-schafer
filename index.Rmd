@@ -14,6 +14,12 @@ library(ggpubr)
 library(mapproj)
 source("analysis.R")
 ```
+## Introduction
+Note: While pie charts can be difficult to interpret, in this situation, where I wanted to display how the racial demographics of jailed populations differs from the racial demographics of the general population.  
+``` {r echo = FALSE}
+ggarrange(pie_jail, pie_total, ncol = 2, nrow = 2)
+
+```
 
 ## Comparison over time charts
 ``` {r echo = FALSE}
@@ -31,3 +37,8 @@ ggarrange(total_jail_to_black_pop, total_jail_to_white_pop, ncol = 2, nrow = 1, 
 black_pop_map
 jail_pop_map
 ```
+
+## Sources
+The data I used was from the Vera Institute of Justice, which has a [data set](https://github.com/vera-institute/incarceration-trends/blob/master/incarceration_trends.csv) containing a large amount of data on incarceration demographics, disaggregated by race, as well as gender.  
+
+For this project, I researched to find additional packages and ways to create visualizations to accurately display the data beyond the methods we discussed in class.  Here are some of the references I used in order to create this project:
