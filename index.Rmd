@@ -15,10 +15,19 @@ library(mapproj)
 source("analysis.R")
 ```
 ## Introduction
-Note: While pie charts can be difficult to interpret, in this situation, where I wanted to display how the composition of the jailed population  differs from the composition of the general population, it was the best visualization I could create.  The general population only shows ages 15-64, as this was the data included in the data set.  
+The incarceral system of the United States is extremely large and plays a key role in our society.  Across the country on each day in 2018, there were an average of `r as.integer(round(total_jail_2018, digits = 0))` total people in jail.  This is an increase of `r as.integer(round(total_jail_2018 - total_jail_1998, digits = 0))` in just 20 years; the average number of people in jail per day in 1998 was `r as.integer(round(total_jail_1998, digits = 0))`.  These extremely large values _only_ focus on jailed populations; when prison populations are included, it is clear how disturbingly large the number of people in our incarceral system is.  
+
+For this project, I decided to focus on analyzing the racial disparities in **jail** populations.  Though the prison systems are also important to analyze, from looking at the Vera Institue for Justice's [visual tool](http://trends.vera.org/incarceration-rates?data=localJail&geography=counties&race=black&year=2018) for the dataset I used, it appeared that they had more data regarding jailed populations.  Additionally, as the Vera Institute of Justice says in [this article](https://www.vera.org/ending-mass-incarceration/reducing-the-use-of-jails), "Conversations about mass incarceration tend to focus on prison, but local jails admit almost 20 times more people annually."  Furthermore, one of the issues with jails are that, as the Vera Institute of Justice writes in [this article](https://www.vera.org/ending-mass-incarceration/reducing-the-use-of-jails/treatment-not-jail), "the criminal justice system, and jails in particular, are a dumping ground for people with substance abuse and mental health problems."  For these reasons, I decided to focus on **jailed** populations.  
+
+I also decided to analyze the **racial disparities** of jailed populations, primarily focusing on the jail system's disproportionate impact on **Black** populations.  This is not to say that the disparities in this system against other racial minorities are not important, but rather only that the disparate impact on Black populations is glaringly obvious in the data.  For example, in 2018, the percentage of the general population ages 15 to 64 that was Black was only `r round(black_prop_total, digits = 1)`%.  In contrast, that same year, the percentage of the jailed population that was Black was `r round(black_prop_jail, digits = 1)`%.  This proportion is `r round(black_prop_comp, digits = 1)` times as that of the general population.  Contrastingly, the percentage of the general population ages 15 to 64 in 2018 that was white was `r round(white_prop_total, digits = 1)`%, white the percentage of the jailed population that was white was only `r round(white_prop_jail, digits = 1)`%.  In the pie charts below, you can visually see the makeup of both the general population and the jailed population nationally in 2018.  
+
 ``` {r pie_charts, echo = FALSE, message = FALSE}
 ggarrange(pie_jail, pie_total, ncol = 2, nrow = 1, common.legend = TRUE, legend = "bottom")
 ```
+
+Note: While pie charts can be difficult to interpret, in this situation, where I wanted to display how the composition of the jailed population  differs from the composition of the general population, it was the best visualization I could create.  The general population only shows ages 15-64, as this was the data included in the data set.  
+
+
 
 ## Comparison over time charts
 ``` {r time_charts, echo = FALSE, message = FALSE}
@@ -26,16 +35,27 @@ ggarrange(jail_percent_time_plot, total_percent_time_plot, total_jail_time_plot,
 ```
 
 ## Variable Comparison Charts
-``` {r var_comp_charts, echo = FALSE, message = FALSE}
-ggarrange(total_jail_to_black_pop, total_jail_to_white_pop, ncol = 2, nrow = 1, common.legend = TRUE, legend = "bottom")
+``` {r var_comp_charts, echo = FALSE, message = FALSE, warning = FALSE}
+ggarrange(total_jail_to_black_percent, total_jail_to_white_percent, ncol = 2, nrow = 1, common.legend = TRUE, legend = "bottom")
 ```
 
+
+The first scatter plot compares the percentage of people ages 15-64 in a county that are Black to the total jailed population of that county.  The second scatter plot is set up similarly, but displays the percentage of people that are white.
+
+These scatter plots and their trend lines show us an important correlation; counties that have a higher percentage of Black people have a _higher_ total jail population, whereas counties that have a higher percentage of white people have a _lower_ total jail population.  While the total jail population trends upward as the percentage of Black people in an area increases, the total jail population trends downward as the percentage of white people increases.  
+
+Also included in these charts is a color-coding based on their "urbanicity."  The Vera Institute for Justice's Codebook explains how it defines urbanicity.  A county is "urban" if it is the core county with a metropolitan area with a million or more people; "suburban" counties are those surrounding urban ones.  "Small/mid" represents small and medium sized metropolitan areas, and "rural" indicates even lower populations.  
+
+This knowledge allows us to further analyze the data.  For example, it makes sense that urban areas tend to have higher jail populations than rural populations; there are more people in urban areas than in rural areas.  This is reflected in the scatter plots.  
 
 ## Maps
 ``` {r map_charts, echo = FALSE, message = FALSE, warning = FALSE}
 black_pop_map
 jail_pop_map
 ```
+
+## Conclusion and Action
+
 
 ## Sources
 The data I used was from the Vera Institute of Justice, which has a [data set](https://github.com/vera-institute/incarceration-trends/blob/master/incarceration_trends.csv) containing a large amount of data on incarceration demographics, disaggregated by race, as well as gender.  
@@ -45,3 +65,5 @@ For this project, I researched to find additional packages and ways to create vi
 - To make the pie charts, I referenced [the R Graph Gallery](https://www.r-graph-gallery.com/piechart-ggplot2.html).
 
 - To get rid of the warning messages that appeared in my Rmd file, I used this solution from [Stack Overflow](https://stackoverflow.com/questions/45399587/how-to-remove-warning-messages-in-r-markdown-document).
+
+- To reformat the names of races in the legends of the visualizations, I used this tutorial from [Data Novia](https://www.datanovia.com/en/blog/ggplot-legend-title-position-and-labels/#rename-legend-labels-and-change-the-order-of-items).

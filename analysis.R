@@ -9,8 +9,14 @@ data <- read.csv('https://raw.githubusercontent.com/vera-institute/incarceration
 # Create a data frame with only the data from 2018
 df_2018 <- filter(data, year == 2018)
 
-# How many people in 2018 were in jail?
+# How many people were in jail on a single day in 2018?
 total_jail_2018 <- sum(df_2018$total_jail_pop, na.rm = TRUE)
+
+# How many people were in jail on a single day in 2008?
+total_jail_1998 <- data %>%
+  filter(year == 1998) %>%
+  select(total_jail_pop) %>%
+  sum(na.rm = TRUE)
 
 # What is the proportion of the total population that is black?
 black_prop_total <- 100 * sum(df_2018$black_pop_15to64, na.rm = TRUE) / sum(df_2018$total_pop_15to64, na.rm = TRUE)
@@ -132,42 +138,40 @@ total_time_plot <- ggplot(data = total_over_time) +
 # the urbanicity of the county, the black total population, and the white total
 # population.
 var_comp_df <- df_2018 %>%
-  select(black_pop_15to64, white_pop_15to64, urbanicity, total_jail_pop) %>%
-  filter(urbanicity != "") # Removes rows that do not have a defined urbanicity
+  select(total_pop_15to64, black_pop_15to64, white_pop_15to64, urbanicity, total_jail_pop) %>%
+  filter(urbanicity != "") %>% # Removes rows that do not have a defined urbanicity
+  mutate(
+    percent_black_total = 100 * (black_pop_15to64 / total_pop_15to64), 
+    percent_white_total = 100 * (white_pop_15to64 / total_pop_15to64))
 
 # Set any value in the dataframe that is NA to 0
-var_comp_df[is.na(var_comp_df)] <- 0
+# var_comp_df[is.na(var_comp_df)] <- 0
 
 # Create two scatter plots, one that compares total jailed population of a county 
-# to the black population of a county, and one that compares the total jailed 
-# population of a county to the white population of a county.  The points will 
+# to the percent black population of a county, and one that compares the total jailed 
+# population of a county to the percent white population of a county.  The points will 
 # be color-coded by the urbanicity of the county.  A linear trend line will be 
-# drawn over the plots.  The x-axis is purposefully set to be the same, so as to 
-# accurately compare the two plots.  The "alpa = 0.3" term decreases the opacity 
+# drawn over the plots.  The "alpha = 0.3" term decreases the opacity 
 # so that the points that are overlapping each other can be more easily distinguished.
-total_jail_to_black_pop <- ggplot(data = var_comp_df, aes(x = black_pop_15to64, y = total_jail_pop)) + 
-  geom_point(aes(col = urbanicity, alpha = 0.3)) + 
-  geom_smooth(method = lm) + 
-  theme(aspect.ratio = 1) +
-  xlim(0, 2000000) + 
+total_jail_to_black_percent <- ggplot(data = var_comp_df, aes(x = percent_black_total, y = total_jail_pop)) + 
+  geom_point(aes(col = urbanicity, alpha = 0.3)) +
+  geom_smooth(method = lm) +
   labs(
     title = "Total Jail Population to Overall \nBlack Population By County, 2018",
-    x = "Total Jailed Population",
-    y = "Black Population",
-    color = "Urbanicity"
-  )
-total_jail_to_white_pop <- ggplot(data = var_comp_df, aes(x = white_pop_15to64, y = total_jail_pop)) + 
-  geom_point(aes(col = urbanicity, alpha = 0.3)) + 
-  geom_smooth(method = lm) + 
-  theme(aspect.ratio = 1) + 
-  xlim(0, 2000000) + 
-  labs(
-    title = "Total Jail Population to Overall \nWhite Population By County, 2018",
-    x = "Total Jailed Population",
-    y = "White Population",
+    x = "Black Population (Percent of General Pop.)",
+    y = "Total Jailed Population",
     color = "Urbanicity"
   )
 
+total_jail_to_white_percent <- ggplot(data = var_comp_df, aes(x = percent_white_total, y = total_jail_pop)) + 
+  geom_point(aes(col = urbanicity, alpha = 0.3)) +
+  geom_smooth(method = lm)  + 
+  labs(
+    title = "Total Jail Population to Overall \nWhite Population By County, 2018",
+    x = "White Population (Percent of General Pop.)",
+    y = "Total Jailed Population",
+    color = "Urbanicity"
+  )
 
 # Map Section
 
