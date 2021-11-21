@@ -78,7 +78,7 @@ total_percent_over_time <- select(race_over_time, year, percent_aapi, percent_bl
 # Data frame showing only the percents of the jailed population
 jail_percent_over_time <- select(race_over_time, year, percent_jail_aapi, percent_jail_black, percent_jail_latinx, percent_jail_native, percent_jail_white)
 # Data frame showing only the totals of the jailed population
-total_jail_over_time <- select(race_over_time, year, total_jail_aapi, total_jail_black, total_jail_latinx, total_jail_native, total_jail_white, total_jail_all)
+total_jail_over_time <- select(race_over_time, year, total_jail_aapi, total_jail_black, total_jail_latinx, total_jail_native, total_jail_white)
 # Data frame showing only the totals of the general population
 total_over_time <- select(race_over_time, year, total_aapi, total_black, total_latinx, total_native, total_white)
 
@@ -94,30 +94,34 @@ total_over_time <- gather(total_over_time, key = "Race", value = "Total", -year)
 total_percent_time_plot <- ggplot(data = total_percent_over_time) + 
   geom_line(aes(x = year, y = Percentage, col = Race)) +
   theme(aspect.ratio = 1) +
-  labs(title = "General Population Racial Percentages Over Time",
+  labs(title = "General Population Racial \nPercentages Over Time",
        x = "Time",
-       y = "Percentage of General Population")
+       y = "Percentage of General Population") +
+  scale_color_discrete(labels = c("AAPI", "Black", "Latinx", "Native", "White"))
 jail_percent_time_plot <- ggplot(data = jail_percent_over_time) + 
   geom_line(aes(x = year, y = Percentage, col = Race)) +
   theme(aspect.ratio = 1) + 
-  labs(title = "Jailed Population Racial Percentages Over Time",
+  labs(title = "Jailed Population Racial \nPercentages Over Time",
        x = "Time",
        y = "Percentage of Jailed Population"
-  )
+  ) +
+  scale_color_discrete(labels = c("AAPI", "Black", "Latinx", "Native", "White"))
 total_jail_time_plot <- ggplot(data = total_jail_over_time) + 
   geom_line(aes(x=year, y= Total, col = Race)) + 
   theme(aspect.ratio = 1) + 
-  labs(title = "Total Jailed Racial Populations Over Time",
+  labs(title = "Total Jailed Racial \nPopulations Over Time",
        x = "Time",
        y = "Total Jailed Population"
-  )
+  ) + 
+  scale_color_discrete(labels = c("AAPI", "Black", "Latinx", "Native", "White"))
 total_time_plot <- ggplot(data = total_over_time) + 
   geom_line(aes(x = year, y = Total, col = Race)) + 
   theme(aspect.ratio = 1) + 
-  labs(title = "Total General Racial Populations Over Time",
+  labs(title = "Total General Racial \nPopulations Over Time",
        x = "Time",
        y = "Total General Population"
-       )
+       ) + 
+  scale_color_discrete(labels = c("AAPI", "Black", "Latinx", "Native", "White"))
 
 
 
@@ -147,7 +151,7 @@ total_jail_to_black_pop <- ggplot(data = var_comp_df, aes(x = black_pop_15to64, 
   theme(aspect.ratio = 1) +
   xlim(0, 2000000) + 
   labs(
-    title = "Total Jail Population to Overall Black Population By County, 2018",
+    title = "Total Jail Population to Overall \nBlack Population By County, 2018",
     x = "Total Jailed Population",
     y = "Black Population",
     color = "Urbanicity"
@@ -158,7 +162,7 @@ total_jail_to_white_pop <- ggplot(data = var_comp_df, aes(x = white_pop_15to64, 
   theme(aspect.ratio = 1) + 
   xlim(0, 2000000) + 
   labs(
-    title = "Total Jail Population to Overall White Population By County, 2018",
+    title = "Total Jail Population to Overall \nWhite Population By County, 2018",
     x = "Total Jailed Population",
     y = "White Population",
     color = "Urbanicity"
@@ -205,7 +209,7 @@ black_pop_map <- ggplot() +
   labs(fill = "Black Population 15-64") + 
   blank_theme + 
   labs(title = "Distribution of Black Populations Across the U.S.", 
-       subtitle = "Grouped by County; color is coded on a logarithmic scale")
+       subtitle = "Ages 15-64; grouped by County; color is coded on a logarithmic scale")
 
 # Make map showing the distribution of the total jail population
 jail_pop_map <- ggplot() + 
@@ -234,16 +238,18 @@ pie_jail_df <- total_jail_over_time %>%
 pie_total_df <- filter(total_over_time, year == 2018)
 # Make a pie chart showing the racial demographics of the 2018 jailed population
 pie_jail <- ggplot(data = pie_jail_df, mapping = aes(x = "", y = Total, fill = Race)) + 
-  geom_bar(stat = "identity", width = 1) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
   coord_polar("y", start = 0) + 
   theme_void() + 
-  labs(title = "Jailed Population Racial Composition, 2018")
+  labs(title = "Jailed Population \nRacial Composition, 2018") + 
+  scale_fill_discrete(labels = c("AAPI", "Black", "Latinx", "Native", "White"))
 # Make a pie chart showing the racial demographics of the 2018 general population
 pie_total <- ggplot(data = pie_total_df, mapping = aes(x = "", y = Total, fill = Race)) + 
-  geom_bar(stat = "identity", width = 1) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
   coord_polar("y", start = 0) + 
   theme_void() + 
-  labs(title = "General Population Racial Composition, 2018")
+  labs(title = "General Population \nRacial Composition, 2018") + 
+  scale_fill_discrete(labels = c("AAPI", "Black", "Latinx", "Native", "White"))
 
 
 
