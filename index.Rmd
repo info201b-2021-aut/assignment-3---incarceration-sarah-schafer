@@ -15,8 +15,9 @@ library(mapproj)
 source("analysis.R")
 ```
 ## Introduction
-The incarceral system of the United States is extremely large and plays a key role in our society.  Across the country on each day in 2018, there were an average of `r as.integer(round(total_jail_2018, digits = 0))` total people in jail.  This is an increase of `r as.integer(round(total_jail_2018 - total_jail_1998, digits = 0))` in just 20 years; the average number of people in jail per day in 1998 was `r as.integer(round(total_jail_1998, digits = 0))`.  These extremely large values _only_ focus on jailed populations; when prison populations are included, it is clear how disturbingly large the number of people in our incarceral system is.  
+The incarceral system of the United States is extremely large and plays a key role in our society.  Across the country on each day in 2018, there were an average of `r as.integer(round(total_jail_2018, digits = 0))` total people in jail.  This is an increase of `r as.integer(round(total_jail_2018 - total_jail_1998, digits = 0))` people in just 20 years; the average number of people in jail per day in 1998 was `r as.integer(round(total_jail_1998, digits = 0))`.  These extremely large values _only_ focus on jailed populations; when prison populations are included, it is clear how disturbingly large the number of people in our incarceral system is.  
 
+### The Focus of this Project
 For this project, I decided to focus on analyzing the racial disparities in **jail** populations.  Though the prison systems are also important to analyze, from looking at the Vera Institue for Justice's [visual tool](http://trends.vera.org/incarceration-rates?data=localJail&geography=counties&race=black&year=2018) for the dataset I used, it appeared that they had more data regarding jailed populations.  Additionally, as the Vera Institute of Justice says in [this article](https://www.vera.org/ending-mass-incarceration/reducing-the-use-of-jails), "Conversations about mass incarceration tend to focus on prison, but local jails admit almost 20 times more people annually."  Furthermore, one of the issues with jails are that, as the Vera Institute of Justice writes in [this article](https://www.vera.org/ending-mass-incarceration/reducing-the-use-of-jails/treatment-not-jail), "the criminal justice system, and jails in particular, are a dumping ground for people with substance abuse and mental health problems."  For these reasons, I decided to focus on **jailed** populations.  
 
 I also decided to analyze the **racial disparities** of jailed populations, primarily focusing on the jail system's disproportionate impact on **Black** populations.  This is not to say that the disparities in this system against other racial minorities are not important, but rather only that the disparate impact on Black populations is glaringly obvious in the data.  For example, in 2018, the percentage of the general population ages 15 to 64 that was Black was only `r round(black_prop_total, digits = 1)`%.  In contrast, that same year, the percentage of the jailed population that was Black was `r round(black_prop_jail, digits = 1)`%.  This proportion is `r round(black_prop_comp, digits = 1)` times as that of the general population.  Contrastingly, the percentage of the general population ages 15 to 64 in 2018 that was white was `r round(white_prop_total, digits = 1)`%, white the percentage of the jailed population that was white was only `r round(white_prop_jail, digits = 1)`%.  In the pie charts below, you can visually see the makeup of both the general population and the jailed population nationally in 2018.  
@@ -26,20 +27,33 @@ I also decided to analyze the **racial disparities** of jailed populations, prim
 ggarrange(pie_jail, pie_total, ncol = 2, nrow = 1, common.legend = TRUE, legend = "bottom")
 ```
 
-_Note: While pie charts can be difficult to interpret, in this situation, where I wanted to display how the composition of the jailed population  differs from the composition of the general population, it was the best visualization I could create.  Additionally, the general population only shows ages 15-64, as this was the data included in the data set.  Finally, there are many more races and intersections of races than are represented in these charts; however, these categorizations were what was available in the data set._  
+_Note: While pie charts can be difficult to interpret, in this situation, where I wanted to display how the composition of the jailed population  differs from the composition of the general population, it was the best visualization I had the tools to create.  Additionally, the general population only shows ages 15-64, as this was the data included in the data set.  Finally, there are many more races and intersections of races than are represented in these charts; however, these categorizations were what was available in the data set._  
 
 As scene in the pie charts, the racial composition of the jailed population is vastly different than the racial composition of the general population of the United States. 
+
+In addition to the aforementioned reasons, one of the reasons I decided to analyze the intersection of race and jail populations is because of its direct link to the **war on drugs**.  In 1971, President Nixon declared that drug abuse was "public enemy number one," officially starting the war on drugs, according [this detailed article](https://www.history.com/topics/crime/the-war-on-drugs) from History.com.  This article also presents a quote from John Ehrlichman, Nixon's domestic policy chief, who said, "We knew we couldn’t make it illegal to be either against the war or black, but by getting the public to associate the hippies with marijuana and blacks with heroin, and then criminalizing both heavily, we could disrupt those communities. We could arrest their leaders, raid their homes, break up their meetings, and vilify them night after night on the evening news. Did we know we were lying about the drugs? Of course, we did."  This disturbing political tactic tragically worked, and Black communities have become increasingly incarcerated.  According to the [ACLU](https://www.aclu.org/issues/smart-justice/sentencing-reform/war-drugs),  "Drug use has not declined, while millions of people—disproportionately poor people and people of color—have been caged and then branded with criminal records that pose barriers to employment, housing, and stability."  For more information on the war on drugs, please read [this article](https://drugpolicy.org/issues/race-and-drug-war) from the Drug Policy Alliance.  Because, as mentioned before, jail and drug use are often connected, I decided to also focus on jail specifically because of the issues of the war on drugs.  
+
+### More Important Summary Statistics
+Along with the information provided above, the county with the highest jailed population in 2018 was `r paste0(as.character(location_highest_jailed$county_name), ", ", as.character(location_highest_jailed$state))`, where there were `r as.integer(location_highest_jailed$total_jail_pop)` people in jail each day.  On average, each state had an average of `r as.integer(avg_jail_pop)` people per day in jail in 2018.  The state with the highest jailed population was `r as.character(state_high_jail$state)`, which had a jail population of `r as.character(state_high_jail$total_jail_pop_state)` people on an average day.  In this state, the Black jail population was `r round(state_high_jail$total_black_jail_pop / state_high_jail$total_white_jail_pop, digits = 3)` times that of the white jail population, while the general Black population was only `r round(state_high_jail$total_black_pop / state_high_jail$total_white_pop, digits = 3)` that of the general white population.  
+
 
 ## Comparison over time charts
 ``` {r time_charts, echo = FALSE, message = FALSE}
 ggarrange(jail_percent_time_plot, total_percent_time_plot, total_jail_time_plot, total_time_plot, ncol = 2, nrow = 2, common.legend = TRUE, legend = "right")
 ```
 
+
+There are four total plots in this section, each of them showing how racial demographics have changed over time from 1990 to 2018.  (Beginning in 1990, there was sufficient data in the data set to produce these charts).  The top two charts measure the racial demographics as percentages, white the bottom two charts measure nationwide  populations.  The left two charts show the jailed populations of the U.S., while the right two charts show the general populations of the U.S.  In each chart, 5 lines are shown representing 5 different races: AAPI, Black, Latinx, Native, and White.  While these are certainly not the only races, these were the only categories represented in the data set.  
+
+Together, these four charts show us some interesting insights.  For example, in the upper left chart, it is clear that Black people have consistently been one of the highest demographics within the jailed population.  Contrastingly, Black people consistently make up a much smaller percent of the general public, as seen in the upper right chart.  Additionally, it is interesting to note that although the _percent_ of the jailed population that is Black appears to be trending _downward_ in the upper left chart, the _total_ number of Black people in jail is trending _upwards_ in the lower left chart. 
+
 ## Variable Comparison Charts
 ``` {r var_comp_charts, echo = FALSE, message = FALSE, warning = FALSE}
 ggarrange(total_jail_to_black_percent, total_jail_to_white_percent, ncol = 2, nrow = 1, common.legend = TRUE, legend = "bottom")
 ```
 
+
+_Note: Some counties had to be excluded because they did not have data in 2018 for these statistics.  The majority of counties are represented in these charts, however._
 
 The first scatter plot compares the percentage of people ages 15-64 in a county that are Black to the total jailed population of that county.  The second scatter plot is set up similarly, but displays the percentage of people that are white.
 
@@ -54,6 +68,10 @@ This knowledge allows us to further analyze the data.  For example, it makes sen
 black_pop_map
 jail_pop_map
 ```
+
+Both of the maps shown cover the whole United States and display data on a county level.  The first map shows the distribution of the Black population, while the second map shows the distribution of the jailed population.  Both of these values are represented on a logarithmic scale to more easily display the differences in the populations.  
+
+The striking thing about these two maps is their similarities.  Areas that tend to have high Black populations (denoted by the darkest blue colors), tend to also have high jail populations (also denoted by dark blue colors).  For example, in Washington, the darkest blue county in the Black population map is King County, indicating this is the Washington county with the highest Black population.  Additionally, in the jail population map, the Washington county that is the darkest blue is also King County, showing that King County also has the highest jailed population.  While King County may also have the highest population overall, the correlation here between the highest Black population and the highest jailed population is interesting and important.  Together with the other charts shown so far, this shows that counties with high Black populations tend to have high jailed populations, and indicating that, as we have repeatedly seen, Black populations tend to be jailed disproportionately frequently.
 
 ## Conclusion and Action
 Clearly, the extensiveness and the racial inequities of the United States are a tremendous issue.  This situation demands immediate change.  Please continue to learn about the issues with the incarceral system in the United States!
@@ -77,3 +95,7 @@ For this project, I researched to find additional packages and ways to create vi
 - To get rid of the warning messages that appeared in my Rmd file, I used this solution from [Stack Overflow](https://stackoverflow.com/questions/45399587/how-to-remove-warning-messages-in-r-markdown-document).
 
 - To reformat the names of races in the legends of the visualizations, I used this tutorial from [Data Novia](https://www.datanovia.com/en/blog/ggplot-legend-title-position-and-labels/#rename-legend-labels-and-change-the-order-of-items).
+
+- To learn how to arrange multiple plots side by side, I referenced this article from [Statistical Tools for High Through-put Data Analysis](http://www.sthda.com/english/articles/24-ggpubr-publication-ready-plots/81-ggplot2-easy-way-to-mix-multiple-graphs-on-the-same-page/).  This showed me how to use the `ggarrange` function from the `ggpubr` package.
+
+- To change the scale on my maps to be logarithmic so the differences in population were more visible, I referenced this [Stack Overflow](https://stackoverflow.com/questions/8069837/is-there-a-built-in-way-to-do-a-logarithmic-color-scale-in-ggplot2) solution.  

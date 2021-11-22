@@ -43,7 +43,27 @@ white_prop_jail <- 100 * sum(df_2018$white_jail_pop, na.rm = TRUE) /
 # proportion of the black general population?
 white_prop_comp <- white_prop_jail / white_prop_total
 
+# What county had the highest number of incarcerated people in 2018?
+location_highest_jailed <- df_2018 %>%
+  filter(total_jail_pop == max(total_jail_pop, na.rm = TRUE))
 
+# Create a data frame showing statistics by state
+state_data <- df_2018 %>%
+  group_by(state) %>%
+  summarize(total_jail_pop_state = sum(total_jail_pop, na.rm = TRUE),
+            total_black_jail_pop = sum(black_jail_pop, na.rm = TRUE),
+            total_black_pop = sum(black_pop_15to64, na.rm = TRUE),
+            total_white_jail_pop = sum(white_jail_pop, na.rm = TRUE),
+            total_white_pop = sum(white_pop_15to64, na.rm = TRUE))
+
+# Create a data frame containing only statistics on the state with the highest
+# total jail population.
+state_high_jail <- filter(
+  state_data,
+  total_jail_pop_state == max(total_jail_pop_state, na.rm = TRUE))
+
+# What was the average jail population per state?
+avg_jail_pop <- mean(state_data$total_jail_pop_state, na.rm = TRUE)
 
 # Trends over Time Charts
 # Create a dataframe that only contains information about different races
@@ -119,6 +139,7 @@ total_percent_time_plot <- ggplot(data = total_percent_over_time) +
   labs(title = "General Population Racial \nPercentages Over Time",
        x = "Time",
        y = "Percentage of General Population") +
+  ylim(0, 100) +
   scale_color_discrete(labels = c("AAPI", "Black", "Latinx", "Native", "White"))
 jail_percent_time_plot <- ggplot(data = jail_percent_over_time) +
   geom_line(aes(x = year, y = Percentage, col = Race)) +
@@ -127,6 +148,7 @@ jail_percent_time_plot <- ggplot(data = jail_percent_over_time) +
        x = "Time",
        y = "Percentage of Jailed Population"
   ) +
+  ylim(0, 100) +
   scale_color_discrete(labels = c("AAPI", "Black", "Latinx", "Native", "White"))
 total_jail_time_plot <- ggplot(data = total_jail_over_time) +
   geom_line(aes(x = year, y = Total, col = Race)) +
@@ -161,20 +183,15 @@ var_comp_df <- df_2018 %>%
     percent_black_total = 100 * (black_pop_15to64 / total_pop_15to64),
     percent_white_total = 100 * (white_pop_15to64 / total_pop_15to64))
 
-# Set any value in the dataframe that is NA to 0
-# var_comp_df[is.na(var_comp_df)] <- 0
-
 # Create two scatter plots, one that compares total jailed population of a
 # county to the percent black population of a county, and one that compares the
 # total jailed population of a county to the percent white population of a
 # county.  The points will be color-coded by the urbanicity of the county.  A
-# linear trend line will be drawn over the plots.  The "alpha = 0.3" term
-# decreases the opacity so that the points that are overlapping each other can
-# be more easily distinguished.
+# linear trend line will be drawn over the plots.  
 total_jail_to_black_percent <- ggplot(data = var_comp_df,
                                       aes(x = percent_black_total,
                                           y = total_jail_pop)) +
-  geom_point(aes(col = urbanicity, alpha = 0.3)) +
+  geom_point(aes(col = urbanicity)) +
   geom_smooth(method = lm) +
   labs(
     title = "Total Jail Population to Overall\n County Black Population, 2018",
@@ -186,7 +203,7 @@ total_jail_to_black_percent <- ggplot(data = var_comp_df,
 total_jail_to_white_percent <- ggplot(data = var_comp_df,
                                       aes(x = percent_white_total,
                                           y = total_jail_pop)) +
-  geom_point(aes(col = urbanicity, alpha = 0.3)) +
+  geom_point(aes(col = urbanicity)) +
   geom_smooth(method = lm)  +
   labs(
     title = "Total Jail Population to Overall\nCounty White Population, 2018",
@@ -232,11 +249,13 @@ black_pop_map <- ggplot() +
     size = .1
   ) +
   coord_map() +
-  scale_fill_continuous(low = "white", high = "blue", trans = "log") +
+  scale_fill_continuous(low = "white", high = "blue", trans = "log", 
+                        breaks = c(1, 50, 3000, 1000000), 
+                        labels = c(1, 50, 3000, "1000000")) +
   labs(fill = "Black Population 15-64") +
   blank_theme +
   labs(title = "Distribution of Black Populations Across the U.S.",
-       subtitle = "Ages 15-64; grouped by County; color is coded on a logarithmic scale")
+       subtitle = "Ages 15-64; grouped by county; color is a logarithmic scale")
 
 # Make map showing the distribution of the total jail population
 jail_pop_map <- ggplot() +
@@ -247,11 +266,13 @@ jail_pop_map <- ggplot() +
     size = .1
   ) +
   coord_map() +
-  scale_fill_continuous(low = "white", high = "blue", trans = "log") +
+  scale_fill_continuous(low = "white", high = "blue", trans = "log",
+                        breaks = c(1, 50, 1000, 15000),
+                        labels = c(1, 50, 1000, 15000)) +
   labs(fill = "Total Jail Population") +
   blank_theme +
   labs(title = "Distribution of Jailed Populations Across the U.S.",
-       subtitle = "Grouped by County; color is coded on a logarithmic scale")
+       subtitle = "Grouped by county; color is coded on a logarithmic scale")
   
   
 # Extra:
