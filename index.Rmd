@@ -74,7 +74,7 @@ Both of the maps shown cover the whole United States and display data on a count
 The striking thing about these two maps is their similarities.  Areas that tend to have high Black populations (denoted by the darkest blue colors), tend to also have high jail populations (also denoted by dark blue colors).  For example, in Washington, the darkest blue county in the Black population map is King County, indicating this is the Washington county with the highest Black population.  Additionally, in the jail population map, the Washington county that is the darkest blue is also King County, showing that King County also has the highest jailed population.  While King County may also have the highest population overall, the correlation here between the highest Black population and the highest jailed population is interesting and important.  Together with the other charts shown so far, this shows that counties with high Black populations tend to have high jailed populations, and indicating that, as we have repeatedly seen, Black populations tend to be jailed disproportionately frequently.
 
 ## Conclusion and Action
-Clearly, the extensiveness and the racial inequities of the United States are a tremendous issue.  This situation demands immediate change.  Please continue to learn about the issues with the incarceral system in the United States!
+Clearly, racial inequities are extensive in the U.S. jail system, and are deserving of immediate attention.  Please continue to learn about the issues with the incarceral system in the United States!
 Here are a few fantastic organizations currently working to combat these issues:
 
 - [The NAACP Legal Defense Fund](https://www.naacpldf.org/)
